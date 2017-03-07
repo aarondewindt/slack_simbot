@@ -8,7 +8,7 @@ from slack_simbot import SimBot
 class TestBasics(unittest.TestCase):
     def test_send_msg(self):
         simbot = SimBot(debug=True)
-        simbot.send_msg("Hello")
+        simbot.send_msg("Wazaaaaaaaap")
 
     def test_name_parsing(self):
         simbot = SimBot(debug=True)
