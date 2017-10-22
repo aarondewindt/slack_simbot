@@ -23,9 +23,9 @@ from slack_simbot.exception_guard import guard
 
 
 class SimBot:
-    def __init__(self, default_channel="#sim_notifications", debug=False, active=True):
+    def __init__(self, default_channel="#sim_notifications", debug=False, active=True, token=None):
         self.debug = debug
-        self.token = os.environ.get('SIMBOT_TOKEN')
+        self.token = token or os.environ.get('SIMBOT_TOKEN')
         self.default_channel = "#simbot_testing" if debug else default_channel
         self._active = active
 
@@ -193,16 +193,41 @@ class SimBot:
         else:
             return None
 
-
     @guard
-    def start_batch(self, title, n_cases, description, *, result_dir=None, channel=None, clear_result_dir=True):
+    def get_user_(self, title, n_cases, description, *, result_dir=None, channel=None, clear_result_dir=True):
         return BatchMsgHandle(self, title, n_cases, result_dir, description, channel=channel,
                               clear_result_dir=clear_result_dir)
 
+    @guard
+    def get_users(self):
+        result = self.slack_client.api_call("users.list")
+        users = []
+        if result['ok']:
+            for user in result['members']:
+                try:
+                    if not user['deleted']:
+                        users.append((
+                            user['profile']['email'],
+                            user['profile']['real_name'],
+                            user['profile']['display_name'],
+                            user['profile']['image_192']
+                        ))
+                    # print(user["name"], user['profile']['email'], user['profile']['image_512'])
+                except:
+                    pass
+        return users
+
 
 if __name__ == "__main__":
-    pass
-    # results = simbot.get_channel_list()
+    simbot = SimBot(debug=True)
+    result = simbot.get_users()
+    print(result)
+    for user in result['members']:
+        try:
+            user['profile']['email']
+            # print(user["name"], user['profile']['email'], user['profile']['image_512'])
+        except KeyError:
+            print(user["name"], user['profile']['image_512'])
 
     # if results['ok']:
     #     for channel in results['channels']:
