@@ -29,7 +29,6 @@ class SimBot:
         self.default_channel = "#simbot_testing" if debug else default_channel
         self._active = active
 
-
         if self.token is None:
             print("Warning: No access to simbot.")
 
@@ -136,8 +135,9 @@ class SimBot:
                          description,
                          dir_path,
                          remote_path="/var/www/html/data",
-                         url="http://daresim.tk/data"):
-        self.connect_ssh()
+                         url="http://daresim.tk/data",
+                         key_filename=None):
+        self.connect_ssh(key_filename=key_filename)
         zip_path = self.compress_directory(dir_path)
 
         # Generate the name the file will have on the server.
